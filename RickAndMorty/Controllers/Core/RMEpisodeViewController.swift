@@ -7,6 +7,9 @@
 
 import UIKit
 
+
+/// Controller to show various app settings and options
+
 final class RMEpisodeViewController: UIViewController {
 
     override func viewDidLoad() {
