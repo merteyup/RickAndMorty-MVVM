@@ -9,9 +9,7 @@ import UIKit
 
 /// Controller to show and search for characters
 final class RMCharacterViewController: UIViewController, RMCharacterListViewDelegate {
-   
-    
-    
+       
     private let characterListView = RMCharacterListView()
     
     override func viewDidLoad() {
