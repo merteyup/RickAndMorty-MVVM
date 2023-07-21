@@ -15,18 +15,33 @@ final class RMLocationViewViewModel {
     
     weak var delegate : RMLocationViewViewModelDelegate?
     
-    private var locations: [RMLocation] = []
-    private var cellViewModels: [String] = []
+    private var locations: [RMLocation] = [] {
+        
+        didSet {
+            for location in locations {
+                let cellViewModel = RMLocationTableViewCellViewModel(location: location)
+                if !cellViewModels.contains(cellViewModel) {
+                    cellViewModels.append(cellViewModel)
+                }
+            }
+        }
+        
+    }
+    public private(set) var cellViewModels: [RMLocationTableViewCellViewModel] = []
     private var apiInfo: RMGetAllLocationsResponse.Info?
     
     /// Location response info
     /// Will contain next url if present
 
     
-    init() {
-        
-    }
+    init() {}
     
+    public func location(at index: Int) -> RMLocation? {
+        guard index < locations.count, index >= 0 else {
+            return nil
+        }
+        return self.locations[index]
+    }
     
     public func fetchLocations() {
         RMService.shared.execute(.listLocationsRequest,
