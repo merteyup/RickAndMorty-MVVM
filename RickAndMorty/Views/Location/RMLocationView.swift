@@ -62,8 +62,6 @@ final class RMLocationView: UIView {
         spinner.startAnimating()
         addConstraints()
         configureTable()
-        
-       
     }
     
     private func configureTable() {
@@ -91,7 +89,6 @@ final class RMLocationView: UIView {
     
     public func configure(with viewModel: RMLocationViewViewModel) {
         self.viewModel = viewModel
-        
     }
 
 }
@@ -134,7 +131,6 @@ extension RMLocationView : UITableViewDataSource {
 extension RMLocationView: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
         
         guard let viewModel = viewModel,
               viewModel.shouldShowLoadMoreIndicator,
