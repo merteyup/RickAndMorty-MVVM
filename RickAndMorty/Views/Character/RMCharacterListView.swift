@@ -83,7 +83,6 @@ final class RMCharacterListView: UIView {
         collectionView.dataSource = viewModel
         collectionView.delegate = viewModel
         
-        
     }
 }
 
