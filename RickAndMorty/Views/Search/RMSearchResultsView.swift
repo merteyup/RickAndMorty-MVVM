@@ -187,19 +187,22 @@ extension RMSearchResultsView : UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        // TODO: Handle cell tap
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let currentViewModel = collectionViewCellViewModels[indexPath.row]
         let bounds = collectionView.bounds
         
+        // Character
         if currentViewModel is RMCharacterCollectionViewCellViewModel {
-            let width = (bounds.width-30)/2
+            let width = UIDevice.isiPhone ? (bounds.width-30)/2 : (bounds.width-50)/4
             return CGSize(width: width,
                           height: width * 1.5)
         }
         
-        let width = (bounds.width-20)
+        // Episode
+        let width = UIDevice.isiPhone ? (bounds.width-20) : (bounds.width-30) / 2
         return CGSize(width: width,
                       height: 100)
     }
@@ -225,7 +228,7 @@ extension RMSearchResultsView : UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         
         guard let viewModel = viewModel,
-                  viewModel.shouldShowLoadMoreIndicator else {
+              viewModel.shouldShowLoadMoreIndicator else {
             return .zero
         }
         
@@ -260,11 +263,24 @@ extension RMSearchResultsView: UIScrollViewDelegate {
             let totalScrollViewFixedHeight = scrollView.frame.size.height
             
             if offset >= (totalContentHeight - totalScrollViewFixedHeight - 120) {
-               
+                
                 viewModel.fetchAdditionalResults { [weak self] newResults in
-                    self?.tableView.tableFooterView = nil
-                    self?.collectionViewCellViewModels = newResults
-                    print("Shuld add more results for search results: ")
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    
+                    DispatchQueue.main.async {
+                        strongSelf.tableView.tableFooterView = nil
+                        let originalCount = strongSelf.collectionViewCellViewModels.count
+                        let newCount = (newResults.count - originalCount)
+                        let total = newCount
+                        let startingIndex = total - newCount
+                        let indexPathsToAdd : [IndexPath] = Array(startingIndex..<(startingIndex+newCount)).compactMap({
+                            return IndexPath(row: $0, section: 0)
+                        })
+                        strongSelf.collectionViewCellViewModels = newResults
+                        strongSelf.collectionView.insertItems(at: indexPathsToAdd)
+                    }
                 }
             }
             t.invalidate()
